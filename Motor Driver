@@ -1,1 +1,240 @@
 
+const int StepX = 2;
+const int DirX = 5;
+const int StepY = 3;
+const int DirY = 6;
+const int StepZ = 4;
+const int DirZ = 7;
+
+
+void setup() {
+  pinMode(StepX,OUTPUT);
+  pinMode(DirX,OUTPUT);
+  pinMode(StepY,OUTPUT);
+  pinMode(DirY,OUTPUT);
+  pinMode(StepZ,OUTPUT);
+  pinMode( DirZ,OUTPUT);
+ 
+
+  
+  //movejoint2(-10);
+
+
+
+}
+
+void loop() {
+  movejoint1(-20);
+  movejoint1(20);
+  movebase(10);
+  movebase(-10);
+  
+/*
+
+ digitalWrite(DirX, LOW); // set direction, HIGH for clockwise, LOW for anticlockwise
+ digitalWrite(DirY, LOW);
+ digitalWrite(DirZ, LOW);
+
+for(int x = 0; x<1200; x++) {
+  digitalWrite(StepY,HIGH);
+  delayMicroseconds(650);
+  digitalWrite(StepY,LOW); 
+  delayMicroseconds(650);
+  digitalWrite(StepX,HIGH);
+  delayMicroseconds(500);
+  digitalWrite(StepX,LOW); 
+  delayMicroseconds(500);
+  digitalWrite(StepZ,HIGH);
+  delayMicroseconds(650);
+  digitalWrite(StepZ,LOW); 
+  delayMicroseconds(650);
+}
+ digitalWrite(DirX, HIGH); // set direction, HIGH for clockwise, LOW for anticlockwise
+ digitalWrite(DirY, HIGH);
+ digitalWrite(DirZ, HIGH);
+for(int x = 0; x<1200; x++) {
+  digitalWrite(StepY,HIGH);
+  delayMicroseconds(650);
+  digitalWrite(StepY,LOW); 
+  delayMicroseconds(650);
+  digitalWrite(StepX,HIGH);
+  delayMicroseconds(500);
+  digitalWrite(StepX,LOW); 
+  delayMicroseconds(500);
+  digitalWrite(StepZ,HIGH);
+  delayMicroseconds(650);
+  digitalWrite(StepZ,LOW); 
+  delayMicroseconds(650);
+}
+*/
+
+}
+void movebase(int degree){
+  //i think gearbox is 1:25 x 9:32 = 1:88.88
+  int steps;
+  int n;
+  int speed = 5000;
+  if (degree >= 0){
+     digitalWrite(DirX, LOW); // set direction, HIGH for clockwise, LOW for anticlockwise
+     digitalWrite(DirY, LOW);
+     digitalWrite(DirZ, LOW);
+
+    steps = (200*degree)/360;
+    n = (75 * steps)/2;
+    speed = speed;
+
+    for(int x = 0; x<n; x++) {
+      digitalWrite(StepY,HIGH);
+      digitalWrite(StepY,LOW); 
+      delayMicroseconds(speed);
+      speed = speed-1;
+    }
+    
+    for(int x = 0; x<n; x++) {
+      digitalWrite(StepY,HIGH);
+      digitalWrite(StepY,LOW); 
+      delayMicroseconds(speed);
+      speed = speed+1.2;
+    }
+
+
+  }
+  if (degree < 0){
+    digitalWrite(DirX, HIGH); // set direction, HIGH for clockwise, LOW for anticlockwise
+    digitalWrite(DirY, HIGH);
+    digitalWrite(DirZ, HIGH);
+    steps = (200*abs(degree))/360;
+    n = (75 * steps)/2;
+
+    for(int x = 0; x<n; x++) {
+      digitalWrite(StepY,HIGH);
+      digitalWrite(StepY,LOW); 
+      delayMicroseconds(speed);
+      speed = speed-1;
+    }
+    for(int x = 0; x<n; x++) {
+      digitalWrite(StepY,HIGH);
+      digitalWrite(StepY,LOW); 
+      delayMicroseconds(speed);
+      speed = speed+1.2;
+    }
+  }
+}
+
+void movejoint1(int degree){
+  //i think gearbox is 1:25 x 9:32 = 1:88.88
+  int steps;
+  int n;
+  int speed = 2400;
+  if (degree >= 0){
+     digitalWrite(DirX, LOW); // set direction, HIGH for clockwise, LOW for anticlockwise
+     digitalWrite(DirY, LOW);
+     digitalWrite(DirZ, LOW);
+
+    steps = (200*degree)/360;
+    n = (75 * steps)/2;
+    speed = speed;
+
+    for(int x = 0; x<n; x++) {
+      digitalWrite(StepX,HIGH);
+      digitalWrite(StepX,LOW); 
+      delayMicroseconds(speed);
+      speed = speed-1;
+    }
+    
+    for(int x = 0; x<n; x++) {
+      digitalWrite(StepX,HIGH);
+      digitalWrite(StepX,LOW); 
+      delayMicroseconds(speed);
+      speed = speed+1.2;
+    }
+
+
+  }
+  if (degree < 0){
+    digitalWrite(DirX, HIGH); // set direction, HIGH for clockwise, LOW for anticlockwise
+    digitalWrite(DirY, HIGH);
+    digitalWrite(DirZ, HIGH);
+    steps = (200*abs(degree))/360;
+    n = (75 * steps)/2;
+
+    for(int x = 0; x<n; x++) {
+      digitalWrite(StepX,HIGH);
+      digitalWrite(StepX,LOW); 
+      delayMicroseconds(speed);
+      speed = speed-1;
+    }
+    for(int x = 0; x<n; x++) {
+      digitalWrite(StepX,HIGH);
+      digitalWrite(StepX,LOW); 
+      delayMicroseconds(speed);
+      speed = speed+1.2;
+    }
+  }
+}
+void movejoint2(int degree){
+  //i think gearbox is 1:25 x 9:32 = 1:88.88
+  int steps;
+  int n;
+  int speed = 2400;
+  if (degree >= 0){
+     digitalWrite(DirX, LOW); // set direction, HIGH for clockwise, LOW for anticlockwise
+     digitalWrite(DirY, LOW);
+     digitalWrite(DirZ, LOW);
+
+    steps = (200*degree)/360;
+    n = (75 * steps)/2;
+    speed = speed;
+
+    for(int x = 0; x<n; x++) {
+      digitalWrite(StepZ,HIGH);
+      digitalWrite(StepZ,LOW); 
+      delayMicroseconds(speed);
+      speed = speed-1;
+    }
+    
+    for(int x = 0; x<n; x++) {
+      digitalWrite(StepZ,HIGH);
+      digitalWrite(StepZ,LOW); 
+      delayMicroseconds(speed);
+      speed = speed+1.2;
+    }
+
+
+  }
+  if (degree < 0){
+    digitalWrite(DirX, HIGH); // set direction, HIGH for clockwise, LOW for anticlockwise
+    digitalWrite(DirY, HIGH);
+    digitalWrite(DirZ, HIGH);
+    steps = (200*abs(degree))/360;
+    n = (75 * steps)/2;
+
+    for(int x = 0; x<n; x++) {
+      digitalWrite(StepZ,HIGH);
+      digitalWrite(StepZ,LOW); 
+      delayMicroseconds(speed);
+      speed = speed-1;
+    }
+    for(int x = 0; x<n; x++) {
+      digitalWrite(StepZ,HIGH);
+      digitalWrite(StepZ,LOW); 
+      delayMicroseconds(speed);
+      speed = speed+1.2;
+    }
+  }
+}
+
+
+
+
+
+/*
+
+for(int x = 0; x<200; x++) { // loop for 200 steps
+  digitalWrite(StepZ,HIGH);
+  delayMicroseconds(500);
+  digitalWrite(StepZ,LOW); 
+  delayMicroseconds(500);
+ }
+
+*/
