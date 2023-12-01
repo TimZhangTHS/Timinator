@@ -1,4 +1,4 @@
-# Quickbot
+# Timinator
 Quick robot assistant to help do everyday chores
 
 Owned by TimZhangTHS All rights reserved. 
