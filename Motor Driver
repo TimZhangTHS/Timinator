@@ -1,240 +1,145 @@
-
-const int StepX = 2;
-const int DirX = 5;
-const int StepY = 3;
-const int DirY = 6;
-const int StepZ = 4;
-const int DirZ = 7;
+#include<Servo.h>
+#include<Wire.h>
+Servo Servo1;
+int servoPin = 9;
+int temp;
+const int stepPin = 5; 
+const int dirPin = 2; 
+const int enPin = 8;
+const int switchPin1 = 13;
+int position3;
+String check;
+float positions[100];
 
 
 void setup() {
-  pinMode(StepX,OUTPUT);
-  pinMode(DirX,OUTPUT);
-  pinMode(StepY,OUTPUT);
-  pinMode(DirY,OUTPUT);
-  pinMode(StepZ,OUTPUT);
-  pinMode( DirZ,OUTPUT);
- 
-
+  pinMode(stepPin,OUTPUT); 
+  pinMode(dirPin,OUTPUT);
+  pinMode(enPin,OUTPUT);
+  digitalWrite(enPin,LOW);
+  Servo1.attach(servoPin);
+  pinMode(switchPin1, INPUT);
+  Serial.begin(115200);
+  Wire.begin();
+  Wire.setClock(400000);
+  position3 = homeing();
+  check = "0";
   
-  //movejoint2(-10);
+}
+void moveServoDegrees(int degrees) {
+  // Constrain the input to make sure it's within the servo's range (usually 0 to 180 degrees)
+  degrees = constrain(degrees, 0, 180);
 
+  // Map the degrees to the servo's pulse width range
+  int servoPosition = map(degrees, 0, 180, 0, 180);
 
+  // Move the servo to the calculated position
+  Servo1.write(servoPosition);
 
+  // Add a delay to allow the servo to reach the target position
+  delay(500);
 }
 
+float movejoint3(float degrees){
+  degrees = ((degrees/360)*9800);
+  Serial.print(degrees);
+  digitalWrite(dirPin,HIGH); // Enables the motor to move in a particular direction
+  for(int x = 0; x < degrees; x++) {
+    digitalWrite(stepPin,HIGH); 
+    delayMicroseconds(500); 
+    digitalWrite(stepPin,LOW); 
+    delayMicroseconds(500); 
+  }
+  delay(1000); // One second delay
+  digitalWrite(dirPin,LOW); //Changes the direction of rotation
+  for(int x = 0; x < degrees; x++) {
+    digitalWrite(stepPin,HIGH);
+    delayMicroseconds(500);
+    digitalWrite(stepPin,LOW);
+    delayMicroseconds(500);
+  }
+  delay(1000); 
+}
+
+
+float homeing(){
+  //joint 3
+  int state1 = digitalRead(switchPin1);
+  while (state1 == 0){
+    digitalWrite(stepPin,HIGH);
+    delayMicroseconds(500);
+    digitalWrite(stepPin,LOW);
+    delayMicroseconds(500);
+    state1 = digitalRead(switchPin1);
+    Serial.println("Homing");
+  }
+  Serial.println("Home");
+  position3 = 0;
+  return(position3);
+}
+void getposition(){
+
+}
+float goposition(float degrees, float p3){
+  degrees = ((degrees/360)*9800);
+
+  if (degrees > p3){
+    delay(200);
+    temp = degrees;
+    degrees = (degrees-p3);
+    digitalWrite(dirPin,HIGH); // Enables the motor to move in a particular direction
+    for(int x = 0; x < degrees; x++) {
+      digitalWrite(stepPin,HIGH); 
+      delayMicroseconds(500); 
+      digitalWrite(stepPin,LOW); 
+      delayMicroseconds(500); 
+    }
+    
+    return(temp);
+  }
+  if(degrees < p3){
+    delay(200);
+      digitalWrite(dirPin,LOW); //Changes the direction of rotation
+      temp = degrees;
+      degrees = (p3-degrees);
+    for(int x = 0; x < degrees; x++) {
+      digitalWrite(stepPin,HIGH);
+      delayMicroseconds(500);
+      digitalWrite(stepPin,LOW);
+      delayMicroseconds(500);
+    }
+    
+    return(temp);
+  }
+}
 void loop() {
-  movejoint1(-20);
-  movejoint1(20);
-  movebase(10);
-  movebase(-10);
   
 /*
+  Serial.println(position3);
+  position3 = goposition(180, position3);
+  Serial.println(position3);
 
- digitalWrite(DirX, LOW); // set direction, HIGH for clockwise, LOW for anticlockwise
- digitalWrite(DirY, LOW);
- digitalWrite(DirZ, LOW);
+  delay(3000);
 
-for(int x = 0; x<1200; x++) {
-  digitalWrite(StepY,HIGH);
-  delayMicroseconds(650);
-  digitalWrite(StepY,LOW); 
-  delayMicroseconds(650);
-  digitalWrite(StepX,HIGH);
-  delayMicroseconds(500);
-  digitalWrite(StepX,LOW); 
-  delayMicroseconds(500);
-  digitalWrite(StepZ,HIGH);
-  delayMicroseconds(650);
-  digitalWrite(StepZ,LOW); 
-  delayMicroseconds(650);
-}
- digitalWrite(DirX, HIGH); // set direction, HIGH for clockwise, LOW for anticlockwise
- digitalWrite(DirY, HIGH);
- digitalWrite(DirZ, HIGH);
-for(int x = 0; x<1200; x++) {
-  digitalWrite(StepY,HIGH);
-  delayMicroseconds(650);
-  digitalWrite(StepY,LOW); 
-  delayMicroseconds(650);
-  digitalWrite(StepX,HIGH);
-  delayMicroseconds(500);
-  digitalWrite(StepX,LOW); 
-  delayMicroseconds(500);
-  digitalWrite(StepZ,HIGH);
-  delayMicroseconds(650);
-  digitalWrite(StepZ,LOW); 
-  delayMicroseconds(650);
-}
+  position3 = goposition(60,position3);
+  Serial.println(position3);
+  delay(3000);
 */
-
-}
-void movebase(int degree){
-  //i think gearbox is 1:25 x 9:32 = 1:88.88
-  int steps;
-  int n;
-  int speed = 5000;
-  if (degree >= 0){
-     digitalWrite(DirX, LOW); // set direction, HIGH for clockwise, LOW for anticlockwise
-     digitalWrite(DirY, LOW);
-     digitalWrite(DirZ, LOW);
-
-    steps = (200*degree)/360;
-    n = (75 * steps)/2;
-    speed = speed;
-
-    for(int x = 0; x<n; x++) {
-      digitalWrite(StepY,HIGH);
-      digitalWrite(StepY,LOW); 
-      delayMicroseconds(speed);
-      speed = speed-1;
-    }
-    
-    for(int x = 0; x<n; x++) {
-      digitalWrite(StepY,HIGH);
-      digitalWrite(StepY,LOW); 
-      delayMicroseconds(speed);
-      speed = speed+1.2;
-    }
-
-
-  }
-  if (degree < 0){
-    digitalWrite(DirX, HIGH); // set direction, HIGH for clockwise, LOW for anticlockwise
-    digitalWrite(DirY, HIGH);
-    digitalWrite(DirZ, HIGH);
-    steps = (200*abs(degree))/360;
-    n = (75 * steps)/2;
-
-    for(int x = 0; x<n; x++) {
-      digitalWrite(StepY,HIGH);
-      digitalWrite(StepY,LOW); 
-      delayMicroseconds(speed);
-      speed = speed-1;
-    }
-    for(int x = 0; x<n; x++) {
-      digitalWrite(StepY,HIGH);
-      digitalWrite(StepY,LOW); 
-      delayMicroseconds(speed);
-      speed = speed+1.2;
-    }
-  }
-}
-
-void movejoint1(int degree){
-  //i think gearbox is 1:25 x 9:32 = 1:88.88
-  int steps;
-  int n;
-  int speed = 2400;
-  if (degree >= 0){
-     digitalWrite(DirX, LOW); // set direction, HIGH for clockwise, LOW for anticlockwise
-     digitalWrite(DirY, LOW);
-     digitalWrite(DirZ, LOW);
-
-    steps = (200*degree)/360;
-    n = (75 * steps)/2;
-    speed = speed;
-
-    for(int x = 0; x<n; x++) {
-      digitalWrite(StepX,HIGH);
-      digitalWrite(StepX,LOW); 
-      delayMicroseconds(speed);
-      speed = speed-1;
-    }
-    
-    for(int x = 0; x<n; x++) {
-      digitalWrite(StepX,HIGH);
-      digitalWrite(StepX,LOW); 
-      delayMicroseconds(speed);
-      speed = speed+1.2;
-    }
-
-
-  }
-  if (degree < 0){
-    digitalWrite(DirX, HIGH); // set direction, HIGH for clockwise, LOW for anticlockwise
-    digitalWrite(DirY, HIGH);
-    digitalWrite(DirZ, HIGH);
-    steps = (200*abs(degree))/360;
-    n = (75 * steps)/2;
-
-    for(int x = 0; x<n; x++) {
-      digitalWrite(StepX,HIGH);
-      digitalWrite(StepX,LOW); 
-      delayMicroseconds(speed);
-      speed = speed-1;
-    }
-    for(int x = 0; x<n; x++) {
-      digitalWrite(StepX,HIGH);
-      digitalWrite(StepX,LOW); 
-      delayMicroseconds(speed);
-      speed = speed+1.2;
-    }
-  }
-}
-void movejoint2(int degree){
-  //i think gearbox is 1:25 x 9:32 = 1:88.88
-  int steps;
-  int n;
-  int speed = 2400;
-  if (degree >= 0){
-     digitalWrite(DirX, LOW); // set direction, HIGH for clockwise, LOW for anticlockwise
-     digitalWrite(DirY, LOW);
-     digitalWrite(DirZ, LOW);
-
-    steps = (200*degree)/360;
-    n = (75 * steps)/2;
-    speed = speed;
-
-    for(int x = 0; x<n; x++) {
-      digitalWrite(StepZ,HIGH);
-      digitalWrite(StepZ,LOW); 
-      delayMicroseconds(speed);
-      speed = speed-1;
-    }
-    
-    for(int x = 0; x<n; x++) {
-      digitalWrite(StepZ,HIGH);
-      digitalWrite(StepZ,LOW); 
-      delayMicroseconds(speed);
-      speed = speed+1.2;
-    }
-
-
-  }
-  if (degree < 0){
-    digitalWrite(DirX, HIGH); // set direction, HIGH for clockwise, LOW for anticlockwise
-    digitalWrite(DirY, HIGH);
-    digitalWrite(DirZ, HIGH);
-    steps = (200*abs(degree))/360;
-    n = (75 * steps)/2;
-
-    for(int x = 0; x<n; x++) {
-      digitalWrite(StepZ,HIGH);
-      digitalWrite(StepZ,LOW); 
-      delayMicroseconds(speed);
-      speed = speed-1;
-    }
-    for(int x = 0; x<n; x++) {
-      digitalWrite(StepZ,HIGH);
-      digitalWrite(StepZ,LOW); 
-      delayMicroseconds(speed);
-      speed = speed+1.2;
-    }
-  }
-}
-
-
-
-
-
 /*
-
-for(int x = 0; x<200; x++) { // loop for 200 steps
-  digitalWrite(StepZ,HIGH);
-  delayMicroseconds(500);
-  digitalWrite(StepZ,LOW); 
-  delayMicroseconds(500);
- }
+  Serial.println(position3);
+  position3 = goposition(141, position3);
+  Serial.println(position3);
+  delay(3000);
+  position3 = goposition(90, position3);
+  Serial.println(position3);
+  delay(3000);
 
 */
+  if(Serial.available()>0){
+    String angle = (Serial.readString());
+    position3 = goposition(angle.toFloat(), position3);
+  }
+  
+  //goposition(30,position3);
+  //Serial.println(position3);
+}
