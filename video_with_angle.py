@@ -4,6 +4,39 @@ import cv2
 import pandas as pd
 import mediapipe as mp
 import math
+import serial.tools.list_ports
+import time
+
+
+
+
+ports = serial.tools.list_ports.comports()
+serialInst = serial.Serial('COM4',115200)
+serialInst.setDTR(False)
+serialInst.flushInput()
+serialInst.setDTR(True)
+time.sleep(6)
+
+#portsList = []
+
+#for onePort in ports:
+#  portsList.append(str(onePort))
+#  print(str(onePort))
+
+#val = input("select Port: COM")
+
+#for x in range(0,len(portsList)):
+#  if portsList[x].startswith("COM"+str(val)):
+#    portVar = "COM" + str(val)
+#    print(portVar)
+
+#serialInst.baudrate = 115200
+#serialInst.port = portVar
+
+
+
+
+
 #Media pipe set up
 mp_holistic = mp.solutions.holistic
 mp_drawing = mp.solutions.drawing_utils
@@ -35,7 +68,6 @@ def draw_landmarks(image, holistic_results, draw_pose = True, draw_face = True, 
         holistic_results.right_hand_landmarks,
         mp_holistic.HAND_CONNECTIONS
       )
-  pass
 
 
 
@@ -87,8 +119,8 @@ def pointsToVector(pointA, pointB):
 
   return (x,y,z)
 
-
 def leftArmAngle(pose_landmarks):
+  
 
   landmarks_list = pose_landmarks.landmark
 
@@ -102,10 +134,15 @@ def leftArmAngle(pose_landmarks):
 
   AB = pointsToVector(a,b)
   CB = pointsToVector(c,b)
-  angle_ABC = radainsToDegree(angleBetweenVectors(AB, CB))
-  print('Left arm: ', angle_ABC)
+  angle_ABC = radainsToDegree(angleBetweenVectors(AB, CB))/2
 
-  return None
+  angle_ABC = round(angle_ABC)
+
+
+
+  
+
+  return angle_ABC
 
 def RightArmAngle(pose_landmarks):
 
@@ -127,6 +164,7 @@ def RightArmAngle(pose_landmarks):
   return None
 
 def main():
+  average = []
   # Set up camera feed
   #capture = cv2.VideoCapture(0)  
   capture = cv2.VideoCapture(0)
@@ -146,7 +184,6 @@ def main():
       if not success:
         print('Ignoring empty camera frame')
         continue
-      
       # To improve performace, optionally mark the image as not writeable to
       # pass by reference.
       frame.flags.writeable = False
@@ -155,10 +192,16 @@ def main():
       frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
       # Have MediaPipe process the image the Holestic solution
-
       results = holistic.process(frame)
-      leftArmAngle(results.pose_landmarks)
-      RightArmAngle(results.pose_landmarks)
+      if results.pose_landmarks:
+        angle_ABC = leftArmAngle(results.pose_landmarks)
+        average.append(angle_ABC)
+        if len(average) > 35:
+          b = str(round(sum(average) / len(average)))
+          serialInst.write(b.encode('utf-8'))
+          print("average is: ", b)
+          average = []
+        #RightArmAngle(results.pose_landmarks)
       # Draw landmarks annotation on the image.
       frame.flags.writeable = True
       frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
@@ -166,7 +209,7 @@ def main():
 
       #Show a live feed of results
       cv2.imshow('Camera Feed', cv2.flip(frame, 1))
-      if cv2.waitKey() & 0xFF == 27:
+      if cv2.waitKey(5) & 0xFF == 27:
         break
 
 
