@@ -1,21 +1,63 @@
 import tinyik
+import numpy as np
 
 print('start')
 
+
+'''
+Coordinates are meassured in millimeters
+'''
+ARM_BASE_COORDINATE = (10,20,30)
+
+
+def map_camera_to_arm(target_coordinate):
+  x = target_coordinate[0] - ARM_BASE_COORDINATE[0]
+  y = target_coordinate[1] - ARM_BASE_COORDINATE[1]
+  z = target_coordinate[2] - ARM_BASE_COORDINATE[2]
+  return (x,y,z)
+
+target_cam_coordinate = (30,30,50)
+target_arm_coord = map_camera_to_arm( target_cam_coordinate )
+print(target_arm_coord)
+
 arm = tinyik.Actuator([
   'y', [0., 20., 0.], 
-  'z', [60., 0., 0.],
-  [0., 0., 11.],
+  'z', [0., 60., 0.],
+  [0., 0., -11.],
   # 'z', [-54., 0, 0.],
-  'z', [0.1,0,0], # 30 Degree
-  'y', [54,0,0],
-  [0., 0., 5.],
-  'z', [0., 1., 0.],
-  'y', [0., 11., 0.],
+  'z', [13.97,-52.16,0], # 15 Degree
+#  'y', [54,0,0],
+  [0., 0., -5.],
+#  'x', [0., 1., 0.],
+  'z', [11.0, 0.0, 0.],
 ])
+
+
+
+arm.ee = target_arm_coord
+
+print(np.rad2deg(arm.angles))
+
+
+print("ANG:", arm.angles)
+print("POS:", arm.ee)
 
 tinyik.visualize(arm, radius=2.5)
 
+print('done')
+exit()
+
+# arm.ee = [50,20,0]
+arm.angles = [0,0,0,0]
+arm.angles = [7.5896, 1.7592, -9.6865, -1.3091]
+
+print(np.rad2deg(arm.angles))
+
+
+print("ANG:", arm.angles)
+print("POS:", arm.ee)
+
+tinyik.visualize(arm, radius=2.5)
 
 print("ANG:", arm.angles)
 print("POS:", arm.ee)
